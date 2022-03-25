@@ -1,4 +1,6 @@
 import requests
+from urllib3.exceptions import HeaderParsingError, InsecureRequestWarning, ReadTimeoutError
+requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
 iam = "https://iam.ru-moscow-1.hc.sbercloud.ru"
 ecs = "https://ecs.ru-moscow-1.hc.sbercloud.ru"
@@ -37,8 +39,9 @@ def getToken(
     request = requests.post(
         url,
         headers = headers,
-        json = data
-    ).json()
+        json = data,
+        verify = False
+    ).headers['X-Subject-Token']
     return request
 
 def tagEcs(
@@ -67,7 +70,8 @@ def tagEcs(
     request = requests.post(
         url,
         headers = headers,
-        json = data
+        json = data,
+        verify = False
     )
     return request
 
@@ -75,7 +79,7 @@ iam_user = input("IAM Username: ")
 password = input("IAM user password: ")
 domain = input("Sbercloud Advanced account name: ")
 project = input("Project ID: ")
-ecsId = input("")
+ecsId = input("ECS ID: ")
 
 token = getToken(
     iam_user,
